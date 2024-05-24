@@ -2,6 +2,8 @@ from BANCO.tabela import Tabela
 
 from SEGURANCA.celula import Celula
 
+from API.teclado.entrada import APITecladoEntrada
+
 
 class Segunca:
 
@@ -12,4 +14,7 @@ class Segunca:
     # tabela celular
     cellular = Celula()
     cellular.ver_celula()
+
+    apitecla = APITecladoEntrada()
+    apitecla.run()
     print(12)
