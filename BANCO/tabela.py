@@ -24,6 +24,8 @@ class Tabela(Base):
         # TECLADO
         self.ativar_banco()
 
+        # peso = 24 horas reduz 0.009 ponto, cada chamado + 0.001
+        # carga = pico ou repouso de carga
         self.cursorsq.execute(
             """CREATE TABLE if not exists Tab_teclado_entrada(
             

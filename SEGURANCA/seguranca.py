@@ -2,7 +2,7 @@ from BANCO.tabela import Tabela
 
 from SEGURANCA.celula import Celula
 
-from API.teclado.entrada import APITecladoEntrada
+from API.api_ import APITecladoEntrada
 
 
 class Segunca:

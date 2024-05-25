@@ -3,22 +3,25 @@ import requests
 
 class Cliente:
 
-    def __init__(self):
-        self.url_base = "http://127.0.0.1:{}/api/resposta"  # sem porta de acesso
-        self.headers = {"Content-Type": "application/json"}  # tipo leitura
-
     def enviar_pergunta(self, pergunta, porta):
+        self.url_base = "http://127.0.0.1:{}/api/resposta"
+        self.headers = {"Content-Type": "application/json"}
         url = self.url_base.format(porta)
         data = {"pergunta": pergunta}
 
         try:
             response = requests.post(url, json=data, headers=self.headers)
             response.raise_for_status()
-
             resposta = response.json().get('resposta')
-            return resposta
+
         except requests.exceptions.RequestException as e:
-            return f"Erro ao se conectar ao servidor: {e}"
+            return f"Erro ao se conectar ao servidor: {e.__class__}"
+
+        except Exception as e:
+            return f"Erro inesperado: {e}"
+
+        else:
+            return resposta
 
 
 class ClienteLoop:
@@ -26,48 +29,32 @@ class ClienteLoop:
     loop = True
     acesso = None
     acesso_anterior = None
-
     porta = None
 
     def __init__(self):
-        super().__init__()
 
-        while ClienteLoop.loop == True:
+        self.printar_text()
 
-            if (ClienteLoop.acesso_anterior !=
-                    ClienteLoop.acesso
-                ):
+        while ClienteLoop.loop:
 
-                self.printar()
-
-                print(
-                    """
-                    0 => Sair do loop\n
-                    1 => Conversar\n
-                    2 => Mudar ou inserir Porta
-                    """)
-                self.printar()
+            self.ACESSO()
 
             self.verificar()
 
     def verificar(self):
-
         match ClienteLoop.acesso:
 
             case 0:
-
                 ClienteLoop.loop = False
-             # Captura qualquer outra exceção não esperada
 
             case 1:
-
-                if ClienteLoop.porta == None:
-
+                if ClienteLoop.porta is None:
                     print("* apenas números.")
-                    porta_2 = input("Digite a porta do servidor: ")
+                    porta_2 = input("* Digite a porta do servidor: ")
 
                     self.porta_acesso_servidor(porta_2)
 
+                print("\n")
                 pergunta = input("Digite sua pergunta: ")
 
                 class_api = Cliente()
@@ -75,42 +62,70 @@ class ClienteLoop:
                     pergunta, ClienteLoop.porta
                 )
                 print(resposta)
-            case _:
+                print("\n")
 
-                try:
+            case 2:
+                print("* apenas números.")
+                porta_2 = input("* Digite a nova porta do servidor: ")
+                self.porta_acesso_servidor(porta_2)
 
-                    testar = int(ClienteLoop.acesso)
-
-                    if testar < 0:
-
-                        print("valor menor que zero não funciona")
-
-                    elif testar > 5:
-
-                        print("valor acima do limite")
-
-                except Exception as er:
-                    # Captura qualquer exceção não esperada
-                    return f"Erro inesperado, variavel acesso: {er}"
-
-    def porta_acesso_servidor(self, mudar):
-
+    def ACESSO(self):
         try:
 
+            testar = int(input("Digite um número de acesso: "))
+
+        except Exception as er:
+            print(f"Erro inesperado, variavel acesso: {er.__class__}")
+
+        else:
+            self.printar()
+
+            if testar < 0:
+                print("valor menor que zero não funciona")
+
+            elif testar > 5:
+                print("valor acima do limite")
+
+            elif ClienteLoop.acesso != testar:
+
+                if (ClienteLoop.acesso is None and
+                        ClienteLoop.acesso_anterior is None):
+
+                    ClienteLoop.acesso_anterior = testar
+                    ClienteLoop.acesso = testar
+
+                else:
+                    if testar == 0:
+                        ClienteLoop.acesso = testar
+
+                    else:
+                        ClienteLoop.acesso_anterior = testar
+                        ClienteLoop.acesso = testar
+                        self.printar_text()
+                        self.printar()
+
+    def porta_acesso_servidor(self, mudar):
+        try:
             numero = int(mudar)
 
+        except Exception as err:
+            print(f"Erro inesperado, variavel porta: {err.__class__}")
+
+        else:
             ClienteLoop.porta = numero
 
-        except Exception as err:
-            # Captura qualquer exceção não esperada
-            return f"Erro inesperado, variavel porta: {err}"
+    def printar_text(self):
+        self.printar()
+        print("""
+            0 => Sair do loop
+            1 => Conversar
+            2 => Mudar ou inserir Porta
+        """)
+        self.printar()
 
     def printar(self):
-
-        print("#-"*20)
-        print("\n")
+        print("#-" * 20)
 
 
 if __name__ == "__main__":
-
     tec = ClienteLoop()
